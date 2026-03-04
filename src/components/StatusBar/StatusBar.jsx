@@ -17,7 +17,7 @@ function Hearts({ hp, maxHp = 4 }) {
   return <div className={styles.hearts}>{hearts}</div>
 }
 
-export default function StatusBar({ round, playerHP, playerWins, credits, phase }) {
+export default function StatusBar({ round, playerHP, playerWins, credits, carryOverCredits, phase }) {
   const progressPct = (playerWins / 10) * 100
 
   return (
@@ -39,12 +39,25 @@ export default function StatusBar({ round, playerHP, playerWins, credits, phase 
 
       <div className={styles.section}>
         {phase === 'forge' || phase === 'draw' ? (
-          <div className={styles.credits}>
-            <span className={styles.creditsIcon}>⚗️</span>
-            <span className={styles.creditsValue}>{credits}</span>
-            <span className={styles.label}>crédits</span>
+          <div className={styles.creditsGroup}>
+            <div className={styles.credits}>
+              <span className={styles.creditsIcon}>⚗️</span>
+              <span className={styles.creditsValue}>{credits}</span>
+              <span className={styles.label}>crédits</span>
+            </div>
+            {carryOverCredits > 0 && (
+              <div className={styles.carryOver}>
+                <span className={styles.carryOverIcon}>🔮</span>
+                <span className={styles.carryOverValue}>+{carryOverCredits}</span>
+              </div>
+            )}
           </div>
         ) : null}
+        {phase === 'result' && carryOverCredits > 0 && (
+          <div className={styles.carryOverBanner}>
+            🔮 +{carryOverCredits} crédit{carryOverCredits > 1 ? 's' : ''} reporté{carryOverCredits > 1 ? 's' : ''}
+          </div>
+        )}
       </div>
     </header>
   )

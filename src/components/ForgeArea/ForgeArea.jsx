@@ -1,10 +1,12 @@
+import { MATERIALS } from '../../data/materials.js'
 import Card from '../Card/Card.jsx'
 import { findSecretRecipe } from '../../utils/forgeEngine.js'
 import styles from './ForgeArea.module.css'
 
-export default function ForgeArea({ slots, onSlotClick, onForge }) {
+export default function ForgeArea({ slots, onSlotClick, onForge, credits, pendingCarryOver }) {
   const canForge = slots.length > 0
   const secretRecipe = findSecretRecipe(slots)
+  const spentCredits = slots.reduce((s, c) => s + (MATERIALS[c.id].creditCost ?? 1), 0)
 
   const classNames = [
     styles.forge,
@@ -20,9 +22,7 @@ export default function ForgeArea({ slots, onSlotClick, onForge }) {
       </h2>
 
       {secretRecipe && (
-        <div className={styles.secretHint}>
-          ✨ Recette secrète détectée ! ✨
-        </div>
+        <div className={styles.secretHint}>✨ Recette secrète détectée ! ✨</div>
       )}
 
       <div className={classNames}>
@@ -32,12 +32,7 @@ export default function ForgeArea({ slots, onSlotClick, onForge }) {
             return (
               <div key={i} className={`${styles.slot} ${card ? styles.filled : styles.empty}`}>
                 {card ? (
-                  <Card
-                    cardId={card.id}
-                    onClick={() => onSlotClick(i)}
-                    inForge
-                    size="normal"
-                  />
+                  <Card cardId={card.id} onClick={() => onSlotClick(i)} inForge size="normal" />
                 ) : (
                   <div className={styles.slotPlaceholder}>
                     <span className={styles.slotNum}>{i + 1}</span>
@@ -46,6 +41,18 @@ export default function ForgeArea({ slots, onSlotClick, onForge }) {
               </div>
             )
           })}
+        </div>
+
+        <div className={styles.costRow}>
+          <span className={styles.costLabel}>
+            Coût : <strong>{spentCredits}</strong>⚗ dépensés
+            {credits > 0 && <span className={styles.creditsLeft}> · {credits} restant{credits > 1 ? 's' : ''}</span>}
+          </span>
+          {pendingCarryOver > 0 && (
+            <span className={styles.carryOverInfo}>
+              🔮 +{pendingCarryOver} reporté{pendingCarryOver > 1 ? 's' : ''} au prochain round
+            </span>
+          )}
         </div>
 
         <button
@@ -58,7 +65,7 @@ export default function ForgeArea({ slots, onSlotClick, onForge }) {
         </button>
       </div>
 
-      <p className={styles.hint}>Cliquez sur une carte pour la retirer</p>
+      <p className={styles.hint}>Cliquez sur une carte forgée pour la retirer</p>
     </section>
   )
 }

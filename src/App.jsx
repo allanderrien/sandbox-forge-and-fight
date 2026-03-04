@@ -61,7 +61,8 @@ export default function App() {
     resolveCombat,
   } = useGameState()
 
-  const { phase, round, playerHP, playerWins, credits, playerHand, forgeSlots,
+  const { phase, round, playerHP, playerWins, credits, carryOverCredits,
+    pendingCarryOver, playerHand, forgeSlots,
     playerWeapon, aiWeapon, roundResult, gameResult, newMaterialsUnlocked } = state
 
   const isForgePhase = phase === 'draw' || phase === 'forge'
@@ -77,6 +78,7 @@ export default function App() {
         playerHP={playerHP}
         playerWins={playerWins}
         credits={credits}
+        carryOverCredits={carryOverCredits}
         phase={phase}
       />
 
@@ -100,6 +102,8 @@ export default function App() {
               slots={forgeSlots}
               onSlotClick={removeFromForge}
               onForge={forge}
+              credits={credits}
+              pendingCarryOver={pendingCarryOver}
             />
           </div>
         )}

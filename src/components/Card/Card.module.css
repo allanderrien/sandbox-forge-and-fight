@@ -141,3 +141,46 @@
   color: var(--accent-gold);
   text-shadow: 0 0 6px var(--accent-gold);
 }
+
+.costBadge {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font-size: 0.55rem;
+  font-weight: 800;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+  letter-spacing: 0.02em;
+  color: var(--accent-glow);
+}
+
+.costBadge[data-cost="0"] {
+  color: #a5f3a5;
+}
+
+.costBadge[data-cost="3"] {
+  color: #ffb347;
+}
+
+.carryOverBadge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #b388ff;
+  text-shadow: 0 0 6px #b388ff;
+  letter-spacing: 0.02em;
+}
+
+.runeCard {
+  border-color: #b388ff !important;
+}
+
+.runeCard::before {
+  background: radial-gradient(circle at 50% 30%, #b388ff 0%, transparent 70%) !important;
+}
+
+.tooExpensive {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}

@@ -136,3 +136,32 @@
   color: var(--text-secondary);
   font-style: italic;
 }
+
+.costRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.costLabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.creditsLeft {
+  color: var(--accent-glow);
+}
+
+.carryOverInfo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #b388ff;
+  text-shadow: 0 0 8px #b388ff;
+  animation: carryGlow 1.5s ease infinite alternate;
+}
+
+@keyframes carryGlow {
+  from { opacity: 0.8; }
+  to { opacity: 1; text-shadow: 0 0 14px #b388ff; }
+}

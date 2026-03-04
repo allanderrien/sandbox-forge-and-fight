@@ -5,7 +5,7 @@ export function getAvailableMaterials(wins) {
   return [...BASE_DECK]
 }
 
-export function drawCards(wins, count = 3) {
+export function drawCards(wins, count = 5) {
   const pool = getAvailableMaterials(wins)
 
   // Weight: tier2 materials less frequent early on
