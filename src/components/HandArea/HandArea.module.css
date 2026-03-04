@@ -1,0 +1,58 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.hand {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  min-height: 130px;
+}
+
+.cardWrapper {
+  animation: dealCard 0.35s ease both;
+}
+
+.cardWrapper:nth-child(1) { animation-delay: 0.0s; }
+.cardWrapper:nth-child(2) { animation-delay: 0.12s; }
+.cardWrapper:nth-child(3) { animation-delay: 0.24s; }
+
+@keyframes dealCard {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.empty {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  align-self: center;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--accent-orange);
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

@@ -1,0 +1,118 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(180deg, #0d0d1a 0%, #1a1a2e 100%);
+  border-bottom: 1px solid rgba(226, 185, 111, 0.2);
+  flex-shrink: 0;
+  gap: 1rem;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+}
+
+.section:last-child {
+  justify-content: flex-end;
+}
+
+.centerSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.roundBadge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hearts {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.heart {
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.heart.filled {
+  color: #e63946;
+  text-shadow: 0 0 8px rgba(230, 57, 70, 0.6);
+}
+
+.heart.half {
+  color: #e63946;
+  opacity: 0.5;
+}
+
+.heart.empty {
+  color: rgba(230, 57, 70, 0.2);
+}
+
+.label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.progressWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  width: 200px;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-orange), var(--accent-gold));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.winsLabel {
+  font-size: 0.7rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+.credits {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 159, 28, 0.1);
+  border: 1px solid rgba(255, 159, 28, 0.3);
+  border-radius: 8px;
+  padding: 0.3rem 0.7rem;
+}
+
+.creditsIcon {
+  font-size: 1rem;
+}
+
+.creditsValue {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-glow);
+}

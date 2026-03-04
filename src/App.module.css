@@ -1,0 +1,205 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100dvh;
+  background: linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-dark) 50%, var(--bg-mid) 100%);
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  gap: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Forge layout */
+.forgeLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 480px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.arrow {
+  font-size: 1.5rem;
+  color: rgba(255, 107, 53, 0.4);
+  animation: bounce 1.5s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* Unlock banner */
+.unlockBanner {
+  background: linear-gradient(135deg, rgba(226, 185, 111, 0.15), rgba(255, 107, 53, 0.1));
+  border: 1px solid rgba(226, 185, 111, 0.4);
+  border-radius: 10px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  text-align: center;
+  animation: slideDown 0.4s ease;
+  max-width: 480px;
+  width: 100%;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Result panel */
+.resultPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.roundResultBadge {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+
+.roundResultBadge.win {
+  color: #4caf50;
+  text-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+}
+
+.roundResultBadge.lose {
+  color: var(--danger);
+  text-shadow: 0 0 20px rgba(230, 57, 70, 0.5);
+}
+
+.roundResultBadge.tie {
+  color: var(--text-secondary);
+}
+
+.roundResultSub {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.nextRoundBtn {
+  background: linear-gradient(135deg, var(--bg-light), #1a3a6e);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 0.65rem 1.8rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.nextRoundBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Menu screen */
+.menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  background: linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-dark) 50%, var(--bg-mid) 100%);
+  padding: 2rem 1rem;
+}
+
+.menuContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  max-width: 420px;
+  text-align: center;
+}
+
+.menuLogo {
+  font-size: 5rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 16px rgba(255,107,53,0.4));
+  animation: float 3s ease infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.menuTitle {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--accent-gold);
+  text-shadow: 0 0 30px rgba(226, 185, 111, 0.4);
+}
+
+.menuTitle span {
+  color: var(--accent-orange);
+}
+
+.menuSubtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.menuRules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  width: 100%;
+}
+
+.ruleItem {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.startBtn {
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-gold) 100%);
+  color: #1a1a2e;
+  font-size: 1.05rem;
+  font-weight: 800;
+  padding: 0.85rem 2.5rem;
+  border-radius: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.startBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(255, 107, 53, 0.6);
+}
