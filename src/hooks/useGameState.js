@@ -76,16 +76,18 @@ function gameReducer(state, action) {
 
       // Persist blueprints, clear elements; expand slots if threshold reached
       const existingWeapon = state.weaponSlots
-      const newWeaponSlots = []
-      for (let i = 0; i < count; i++) {
-        const existing = existingWeapon[i]
-        // Only keep blueprint if it fits (heavy weapons occupy single slot)
-        const keepBp = existing?.blueprint
-          && (existing.blueprint.slotsRequired === 1 || count === 1)
-          ? existing.blueprint
-          : null
-        newWeaponSlots.push(makeWeaponSlot(i, keepBp))
-      }
+      const heavyBp = existingWeapon[0]?.blueprint?.slotsRequired === 2
+        ? existingWeapon[0].blueprint
+        : null
+      // Heavy weapons occupy a single slot regardless of count
+      const newWeaponSlots = heavyBp
+        ? [makeWeaponSlot(0, heavyBp)]
+        : Array.from({ length: count }, (_, i) => {
+            const keepBp = existingWeapon[i]?.blueprint?.slotsRequired === 1
+              ? existingWeapon[i].blueprint
+              : null
+            return makeWeaponSlot(i, keepBp)
+          })
 
       // Artefact slot: available from round 7
       const artefactSlots = state.round >= 7
