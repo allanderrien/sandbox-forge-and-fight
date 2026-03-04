@@ -1,7 +1,7 @@
 import { MATERIALS } from '../data/materials.js'
 import { SECRET_RECIPES } from '../data/recipes.js'
-import { drawCards } from './deckManager.js'
-import { forgeWeapon } from './forgeEngine.js'
+import { drawCards, drawBlueprints } from './deckManager.js'
+import { forgeSlot } from './forgeEngine.js'
 
 function getAiLevel(round) {
   if (round <= 3) return 1
@@ -21,7 +21,6 @@ function trySecretRecipe(hand) {
       return true
     })
     if (canMake) {
-      // Return cards in recipe order
       const usedCards = []
       const remaining = [...hand]
       for (const ing of recipe.ingredients) {
@@ -45,31 +44,39 @@ export function aiForge(round, wins) {
   const hand = drawCards(wins, 3)
   const level = getAiLevel(round)
 
+  // Pick a random available blueprint
+  const [blueprint] = drawBlueprints(round)
+
   let selectedCards
 
   if (level >= 3) {
-    const secret = trySecretRecipe(hand)
+    const secret = blueprint.elementSlots === 3 ? trySecretRecipe(hand) : null
     if (secret) {
       selectedCards = secret
     } else {
-      selectedCards = pickBestCards(hand, 3)
+      selectedCards = pickBestCards(hand, Math.min(blueprint.elementSlots, hand.length))
     }
   } else if (level === 2) {
-    // Pick 2 or 3 best cards
-    const count = Math.random() < 0.6 ? 3 : 2
-    selectedCards = pickBestCards(hand, count)
+    const count = Math.min(
+      blueprint.elementSlots > 0 ? (Math.random() < 0.6 ? blueprint.elementSlots : blueprint.elementSlots - 1) : 0,
+      hand.length
+    )
+    selectedCards = pickBestCards(hand, Math.max(0, count))
   } else {
-    // Level 1: pick 1 or 2 random
-    const count = Math.random() < 0.4 ? 2 : 1
+    const max = Math.min(blueprint.elementSlots, hand.length)
+    const count = Math.max(0, Math.floor(Math.random() * (max + 1)))
     const shuffled = [...hand].sort(() => Math.random() - 0.5)
     selectedCards = shuffled.slice(0, count)
   }
 
-  const weapon = forgeWeapon(selectedCards)
+  const result = forgeSlot(blueprint, selectedCards)
 
-  // Add small random variance to make it less predictable
+  // Add small random variance
   const variance = level === 1 ? (Math.random() - 0.5) * 2 : (Math.random() - 0.5)
-  weapon.power = Math.max(1, Math.round(weapon.power + variance))
+  const weapon = {
+    ...result,
+    power: Math.max(1, Math.round(result.power + variance)),
+  }
 
   return { hand, selectedCards, weapon }
 }

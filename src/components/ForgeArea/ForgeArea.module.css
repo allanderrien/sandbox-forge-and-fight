@@ -2,7 +2,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.7rem;
+  width: 100%;
+  max-width: 480px;
+  padding: 1rem;
+  background: linear-gradient(160deg, #1c1008 0%, #2a1a0a 100%);
+  border: 2px solid rgba(255, 107, 53, 0.3);
+  border-radius: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.section.secret {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 20px rgba(226, 185, 111, 0.35), inset 0 0 20px rgba(226, 185, 111, 0.05);
+  animation: secretPulse 1.5s ease infinite;
+}
+
+@keyframes secretPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(226, 185, 111, 0.35), inset 0 0 20px rgba(226, 185, 111, 0.05); }
+  50% { box-shadow: 0 0 35px rgba(226, 185, 111, 0.6), inset 0 0 30px rgba(226, 185, 111, 0.1); }
 }
 
 .title {
@@ -16,16 +34,11 @@
   letter-spacing: 0.1em;
 }
 
-.fireIcon {
-  font-size: 1rem;
-}
-
 .secretHint {
   font-size: 0.8rem;
   color: var(--accent-gold);
   font-weight: 700;
   animation: glow 1s ease infinite alternate;
-  text-align: center;
 }
 
 @keyframes glow {
@@ -33,124 +46,24 @@
   to { text-shadow: 0 0 18px var(--accent-gold), 0 0 30px var(--accent-orange); }
 }
 
-.forge {
-  background: linear-gradient(160deg, #1c1008 0%, #2a1a0a 100%);
-  border: 2px solid rgba(255, 107, 53, 0.3);
-  border-radius: 16px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  width: 100%;
-  max-width: 380px;
-}
-
-.forge.secret {
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 20px rgba(226, 185, 111, 0.35), inset 0 0 20px rgba(226, 185, 111, 0.05);
-  animation: secretPulse 1.5s ease infinite;
-}
-
-@keyframes secretPulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(226, 185, 111, 0.35), inset 0 0 20px rgba(226, 185, 111, 0.05); }
-  50% { box-shadow: 0 0 35px rgba(226, 185, 111, 0.6), inset 0 0 30px rgba(226, 185, 111, 0.1); }
-}
-
-.slots {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  min-height: 130px;
-}
-
-.slot {
-  position: relative;
-}
-
-.slotPlaceholder {
-  width: 90px;
-  height: 130px;
-  border: 2px dashed rgba(255, 107, 53, 0.25);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 107, 53, 0.03);
-  transition: border-color 0.2s;
-}
-
-.slotPlaceholder:hover {
-  border-color: rgba(255, 107, 53, 0.5);
-}
-
-.slotNum {
-  font-size: 1.5rem;
-  color: rgba(255, 107, 53, 0.2);
-  font-weight: 700;
-}
-
-.forgeBtn {
-  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 0.65rem 1.8rem;
-  border-radius: 10px;
-  border: none;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: transform 0.15s, box-shadow 0.15s, background 0.3s;
-  box-shadow: 0 4px 14px rgba(231, 76, 60, 0.4);
-}
-
-.forgeBtn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(231, 76, 60, 0.5);
-}
-
-.forgeBtn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.forgeBtnSecret {
-  background: linear-gradient(135deg, #b7860b 0%, #e2b96f 100%);
-  color: #1a1a2e;
-  box-shadow: 0 4px 14px rgba(226, 185, 111, 0.5);
-}
-
-.forgeBtnSecret:hover:not(:disabled) {
-  box-shadow: 0 8px 24px rgba(226, 185, 111, 0.7);
-}
-
-.forgeBtnIcon {
-  font-size: 1.1rem;
-}
-
 .hint {
   font-size: 0.65rem;
   color: var(--text-secondary);
   font-style: italic;
+  margin: 0;
 }
 
-.costRow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-}
-
-.costLabel {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.creditsLeft {
+.hintActive {
+  font-size: 0.65rem;
   color: var(--accent-glow);
+  font-weight: 600;
+  margin: 0;
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
 }
 
 .carryOverInfo {
@@ -164,4 +77,41 @@
 @keyframes carryGlow {
   from { opacity: 0.8; }
   to { opacity: 1; text-shadow: 0 0 14px #b388ff; }
+}
+
+.forgeBtn {
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.65rem 2rem;
+  border-radius: 10px;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 14px rgba(231, 76, 60, 0.4);
+}
+
+.forgeBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(231, 76, 60, 0.5);
+}
+
+.forgeBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.forgeBtnSecret {
+  background: linear-gradient(135deg, #b7860b 0%, #e2b96f 100%);
+  color: #1a1a2e;
+  box-shadow: 0 4px 14px rgba(226, 185, 111, 0.5);
+}
+
+.forgeBtnSecret:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(226, 185, 111, 0.7);
 }

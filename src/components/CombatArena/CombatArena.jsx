@@ -28,13 +28,15 @@ function WeaponCard({ weapon, label, revealed }) {
       {weapon.isSecret && (
         <div className={styles.secretBadge}>RECETTE SECRÈTE</div>
       )}
-      <div className={styles.materialsList}>
-        {weapon.materials.map((id, i) => (
-          <span key={i} title={MATERIALS[id]?.name}>
-            {MATERIALS[id]?.emoji}
-          </span>
-        ))}
-      </div>
+      {weapon.materials?.length > 0 && (
+        <div className={styles.materialsList}>
+          {weapon.materials.map((id, i) => (
+            <span key={i} title={MATERIALS[id]?.name}>
+              {MATERIALS[id]?.emoji}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

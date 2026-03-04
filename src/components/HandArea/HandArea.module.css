@@ -25,6 +25,12 @@
 .cardWrapper {
   animation: dealCard 0.35s ease both;
   animation-delay: calc(var(--i) * 0.1s);
+  touch-action: none;
+}
+
+.cardWrapper.dragging {
+  opacity: 0.3;
+  cursor: grabbing;
 }
 
 @keyframes dealCard {
