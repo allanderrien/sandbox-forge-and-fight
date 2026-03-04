@@ -28,6 +28,10 @@ export default function BlueprintPhase({
   const hasAnyBlueprint = allSlots.some(s => s.blueprint)
   const placementsLeft = 2 - blueprintPlacements
 
+  // Hide blueprints already placed in a slot
+  const placedIds = new Set(allSlots.filter(s => s.blueprint).map(s => s.blueprint.id))
+  const availableBlueprints = drawnBlueprints.filter(bp => !placedIds.has(bp.id))
+
   return (
     <div className={styles.phase}>
       <div className={styles.header}>
@@ -42,7 +46,7 @@ export default function BlueprintPhase({
       <div className={styles.options}>
         <div className={styles.optionsLabel}>Nouvelles options</div>
         <div className={styles.blueprintRow}>
-          {drawnBlueprints.map(bp => (
+          {availableBlueprints.map(bp => (
             <BlueprintCard
               key={bp.id}
               blueprint={bp}

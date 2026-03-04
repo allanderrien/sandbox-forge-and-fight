@@ -57,7 +57,7 @@ export default function HandArea({ hand, onCardClick, disabled, credits, focused
 
       <div className={styles.hand}>
         {hand.map((card, index) => {
-          const cardDisabled = disabled || noSlotSelected || slotFull
+          const cardDisabled = disabled || slotFull
           return (
             <DraggableCardWrapper
               key={card.uid}
