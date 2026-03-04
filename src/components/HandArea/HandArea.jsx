@@ -3,12 +3,19 @@ import { MATERIALS } from '../../data/materials.js'
 import Card from '../Card/Card.jsx'
 import styles from './HandArea.module.css'
 
-function DraggableCardWrapper({ card, index, disabled, children }) {
+function DraggableCardWrapper({ card, index, draggableDisabled, cardDisabled, onCardClick, credits }) {
+  const cost = MATERIALS[card.id].creditCost ?? 1
+  const tooExpensive = credits < cost
+
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `el-${card.uid}`,
     data: { type: 'element', cardIndex: index },
-    disabled,
+    disabled: draggableDisabled,
   })
+
+  const handleClick = () => {
+    if (!cardDisabled) onCardClick(index)
+  }
 
   return (
     <div
@@ -17,8 +24,17 @@ function DraggableCardWrapper({ card, index, disabled, children }) {
       style={{ '--i': index }}
       {...listeners}
       {...attributes}
+      onClick={handleClick}
     >
-      {children}
+      {/* pointer-events: none ensures pointerdown always reaches the wrapper div,
+          even when the Card button is HTML-disabled */}
+      <div style={{ pointerEvents: 'none' }}>
+        <Card
+          cardId={card.id}
+          disabled={cardDisabled}
+          tooExpensive={!cardDisabled && tooExpensive}
+        />
+      </div>
     </div>
   )
 }
@@ -33,7 +49,7 @@ export default function HandArea({ hand, onCardClick, disabled, credits, focused
       <h2 className={styles.title}>Main ({hand.length} cartes)</h2>
 
       {noSlotSelected && !disabled && (
-        <p className={styles.hint}>⬇ Sélectionnez un slot sur l'enclume d'abord</p>
+        <p className={styles.hint}>⬇ Glissez une carte sur un slot, ou sélectionnez un slot d'abord</p>
       )}
       {slotFull && !noSlotSelected && (
         <p className={styles.hint}>Slot plein — choisissez un autre slot</p>
@@ -41,18 +57,17 @@ export default function HandArea({ hand, onCardClick, disabled, credits, focused
 
       <div className={styles.hand}>
         {hand.map((card, index) => {
-          const cost = MATERIALS[card.id].creditCost ?? 1
-          const tooExpensive = credits < cost
           const cardDisabled = disabled || noSlotSelected || slotFull
           return (
-            <DraggableCardWrapper key={card.uid} card={card} index={index} disabled={disabled}>
-              <Card
-                cardId={card.id}
-                onClick={() => onCardClick(index)}
-                disabled={cardDisabled}
-                tooExpensive={!cardDisabled && tooExpensive}
-              />
-            </DraggableCardWrapper>
+            <DraggableCardWrapper
+              key={card.uid}
+              card={card}
+              index={index}
+              draggableDisabled={disabled}
+              cardDisabled={cardDisabled}
+              onCardClick={onCardClick}
+              credits={credits}
+            />
           )
         })}
         {hand.length === 0 && (
