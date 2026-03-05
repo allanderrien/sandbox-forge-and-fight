@@ -350,6 +350,9 @@ function gameReducer(state, action) {
       return { ...state, credits: state.credits - 1, playerHand: newHand }
     }
 
+    case 'GOTO_MENU':
+      return { ...state, phase: 'menu' }
+
     default:
       return state
   }
@@ -368,12 +371,13 @@ export function useGameState() {
   const forge = useCallback(() => dispatch({ type: 'FORGE' }), [])
   const resolveCombat = useCallback(() => dispatch({ type: 'RESOLVE_COMBAT' }), [])
   const rerollHand = useCallback(() => dispatch({ type: 'REROLL_HAND' }), [])
+  const gotoMenu   = useCallback(() => dispatch({ type: 'GOTO_MENU' }), [])
 
   return {
     state,
     startGame, startRound,
     placeBlueprint, confirmBlueprints,
     selectSlot, applyElement, removeElement,
-    forge, resolveCombat, rerollHand,
+    forge, resolveCombat, rerollHand, gotoMenu,
   }
 }

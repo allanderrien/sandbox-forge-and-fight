@@ -1,6 +1,6 @@
 import styles from './ResultOverlay.module.css'
 
-export default function ResultOverlay({ result, playerWins, playerHP, onNext, onRestart, difficulty }) {
+export default function ResultOverlay({ result, playerWins, playerHP, onNext, onRestart, onMenu, difficulty }) {
   if (result === 'gameover') {
     const isVictory = playerWins >= 10
     return (
@@ -16,9 +16,14 @@ export default function ResultOverlay({ result, playerWins, playerHP, onNext, on
               : `Vous avez perdu toute votre vie après ${playerWins} victoires.`
             }
           </p>
-          <button className={styles.restartBtn} onClick={() => onRestart(difficulty)}>
-            Rejouer
-          </button>
+          <div className={styles.btnRow}>
+            <button className={styles.menuBtn} onClick={onMenu}>
+              ← Menu
+            </button>
+            <button className={styles.restartBtn} onClick={() => onRestart(difficulty)}>
+              Rejouer
+            </button>
+          </div>
         </div>
       </div>
     )

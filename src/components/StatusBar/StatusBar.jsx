@@ -17,12 +17,13 @@ function Hearts({ hp, maxHp = 4 }) {
   return <div className={styles.hearts}>{hearts}</div>
 }
 
-export default function StatusBar({ round, playerHP, playerWins, credits, carryOverCredits, phase }) {
+export default function StatusBar({ round, playerHP, playerWins, credits, carryOverCredits, phase, onMenu }) {
   const progressPct = (playerWins / 10) * 100
 
   return (
     <header className={styles.bar}>
       <div className={styles.section}>
+        <button className={styles.menuBtn} onClick={onMenu} title="Retour au menu">≡</button>
         <Hearts hp={playerHP} />
         <span className={styles.label}>Vie</span>
       </div>

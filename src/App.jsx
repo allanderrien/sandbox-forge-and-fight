@@ -84,6 +84,7 @@ export default function App() {
     forge,
     resolveCombat,
     rerollHand,
+    gotoMenu,
   } = useGameState()
 
   const {
@@ -143,6 +144,7 @@ export default function App() {
         credits={credits}
         carryOverCredits={carryOverCredits}
         phase={phase}
+        onMenu={gotoMenu}
       />
 
       <main className={styles.main}>
@@ -241,6 +243,7 @@ export default function App() {
           playerHP={playerHP}
           gameResult={gameResult}
           onRestart={startGame}
+          onMenu={gotoMenu}
           difficulty={state.difficulty}
         />
       )}

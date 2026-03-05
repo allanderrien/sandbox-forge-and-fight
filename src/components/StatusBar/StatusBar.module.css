@@ -61,6 +61,23 @@
   color: rgba(230, 57, 70, 0.2);
 }
 
+.menuBtn {
+  font-size: 1.1rem;
+  line-height: 1;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+  transition: color 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+
+.menuBtn:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
 .label {
   font-size: 0.7rem;
   color: var(--text-secondary);
