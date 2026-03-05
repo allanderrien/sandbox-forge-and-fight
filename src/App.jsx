@@ -199,6 +199,8 @@ export default function App() {
             playerWeapon={playerWeapon}
             aiWeapon={aiWeapon}
             onResolve={resolveCombat}
+            weaponSlots={weaponSlots}
+            artefactSlots={artefactSlots || []}
           />
         )}
 

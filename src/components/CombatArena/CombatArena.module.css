@@ -8,10 +8,108 @@
 
 .combatants {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 1.5rem;
   width: 100%;
+}
+
+.playerSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bonusChips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  width: 160px;
+}
+
+.bonusTitle {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  text-align: center;
+  opacity: 0;
+  animation: chipFade 0.3s ease 0.2s forwards;
+}
+
+.chip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.18rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0;
+  animation: chipPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes chipPop {
+  from { opacity: 0; transform: scale(0.6) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes chipFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.chip_base {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+}
+
+.chip_element {
+  background: rgba(74, 144, 226, 0.12);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+  color: #7eb3f0;
+}
+
+.chip_synergy {
+  background: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.35);
+  color: #81c784;
+}
+
+.chip_special {
+  background: rgba(226, 185, 111, 0.12);
+  border: 1px solid rgba(226, 185, 111, 0.35);
+  color: var(--accent-gold);
+}
+
+.chip_secret {
+  background: rgba(226, 185, 111, 0.18);
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
+  font-weight: 700;
+  justify-content: center;
+  animation: chipPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+             secretChipPulse 1.2s ease infinite;
+}
+
+@keyframes secretChipPulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 10px rgba(226, 185, 111, 0.4); }
+}
+
+.chipLabel {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chipValue {
+  font-weight: 800;
+  margin-left: 0.4rem;
+  flex-shrink: 0;
 }
 
 .weaponCard {
@@ -136,11 +234,11 @@
   to { transform: scale(1); opacity: 1; }
 }
 
-.clashing .weaponCard:first-child {
+.clashing .playerSide .weaponCard {
   animation: shakeLeft 0.4s ease 0.1s;
 }
 
-.clashing .weaponCard:last-child {
+.clashing .combatants > .weaponCard {
   animation: shakeRight 0.4s ease 0.1s;
 }
 
