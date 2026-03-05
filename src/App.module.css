@@ -203,3 +203,63 @@
   transform: translateY(-3px);
   box-shadow: 0 12px 30px rgba(255, 107, 53, 0.6);
 }
+
+.difficultyLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: -0.4rem;
+}
+
+.difficultyPicker {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.diffBtn {
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.75rem 1.4rem;
+  border-radius: 12px;
+  letter-spacing: 0.04em;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.diffBtn:hover {
+  transform: translateY(-2px);
+}
+
+.diffEasy {
+  background: linear-gradient(135deg, #3a5a3a, #2d4a2d);
+  color: #a8d8a8;
+  border: 1px solid rgba(168, 216, 168, 0.3);
+  box-shadow: 0 4px 14px rgba(76, 175, 80, 0.25);
+}
+
+.diffEasy:hover {
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+}
+
+.diffNormal {
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-gold) 100%);
+  color: #1a1a2e;
+  border: 1px solid rgba(255, 107, 53, 0.4);
+  box-shadow: 0 4px 14px rgba(255, 107, 53, 0.35);
+}
+
+.diffNormal:hover {
+  box-shadow: 0 8px 22px rgba(255, 107, 53, 0.55);
+}
+
+.diffHard {
+  background: linear-gradient(135deg, #6b1a1a, #9b2a2a);
+  color: #ffaaaa;
+  border: 1px solid rgba(255, 100, 100, 0.35);
+  box-shadow: 0 4px 14px rgba(180, 50, 50, 0.35);
+}
+
+.diffHard:hover {
+  box-shadow: 0 8px 22px rgba(200, 50, 50, 0.55);
+}

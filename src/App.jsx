@@ -36,9 +36,18 @@ function MenuScreen({ onStart }) {
           <div className={styles.ruleItem}>💀 4 défaites = game over</div>
           <div className={styles.ruleItem}>✨ Recettes secrètes = puissance ×2</div>
         </div>
-        <button className={styles.startBtn} onClick={onStart}>
-          Commencer la partie
-        </button>
+        <p className={styles.difficultyLabel}>Choisissez une difficulté</p>
+        <div className={styles.difficultyPicker}>
+          <button className={`${styles.diffBtn} ${styles.diffEasy}`} onClick={() => onStart('easy')}>
+            🕯️ Facile
+          </button>
+          <button className={`${styles.diffBtn} ${styles.diffNormal}`} onClick={() => onStart('normal')}>
+            🔥 Normal
+          </button>
+          <button className={`${styles.diffBtn} ${styles.diffHard}`} onClick={() => onStart('hard')}>
+            🌋 Difficile
+          </button>
+        </div>
       </div>
     </div>
   )

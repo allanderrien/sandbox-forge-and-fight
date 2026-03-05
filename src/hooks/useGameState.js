@@ -37,6 +37,7 @@ const initialState = {
   carryOverCredits: 0,
   pendingCarryOver: 0,
   playerHand: [],
+  difficulty: 'easy',
   // Blueprint system
   drawnBlueprints: [],
   blueprintPlacements: 0,
@@ -63,6 +64,7 @@ function gameReducer(state, action) {
       return {
         ...initialState,
         phase: 'blueprint',
+        difficulty: action.difficulty || 'easy',
         drawnBlueprints: blueprints,
         weaponSlots: [makeWeaponSlot(0)],
         artefactSlots: [],
@@ -295,7 +297,7 @@ function gameReducer(state, action) {
         artefactSlots: computedArtefactSlots,
       }
 
-      const aiResult = aiForge(state.round, state.playerWins)
+      const aiResult = aiForge(state.round, state.playerWins, state.difficulty, state.playerHP, state.lastRoundResult)
 
       return {
         ...state,
@@ -356,7 +358,7 @@ function gameReducer(state, action) {
 export function useGameState() {
   const [state, dispatch] = useReducer(gameReducer, initialState)
 
-  const startGame = useCallback(() => dispatch({ type: 'START_GAME' }), [])
+  const startGame = useCallback((difficulty) => dispatch({ type: 'START_GAME', difficulty }), [])
   const startRound = useCallback(() => dispatch({ type: 'START_ROUND' }), [])
   const placeBlueprint = useCallback((blueprintId, slotKey) => dispatch({ type: 'PLACE_BLUEPRINT', blueprintId, slotKey }), [])
   const confirmBlueprints = useCallback(() => dispatch({ type: 'CONFIRM_BLUEPRINTS' }), [])
