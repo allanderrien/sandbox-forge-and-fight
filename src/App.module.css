@@ -46,22 +46,56 @@
 
 /* Unlock banner */
 .unlockBanner {
-  background: linear-gradient(135deg, rgba(226, 185, 111, 0.15), rgba(255, 107, 53, 0.1));
-  border: 1px solid rgba(226, 185, 111, 0.4);
-  border-radius: 10px;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 12px;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.88rem;
+  font-weight: 700;
   color: var(--accent-gold);
   text-align: center;
-  animation: slideDown 0.4s ease;
   max-width: 480px;
   width: 100%;
+  letter-spacing: 0.03em;
+  animation:
+    bannerPop 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) both,
+    bannerGlow 2.2s ease infinite 0.55s;
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-12px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Rotating conic-gradient "neon border" */
+.unlockBanner::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(from 0deg, #ff6b35, #e2b96f, #7ec8e3, #b87cde, #ff6b35);
+  animation: rotateBorder 2.8s linear infinite;
+  z-index: -1;
+}
+
+/* Inner fill */
+.unlockBanner::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(18, 18, 38, 0.97), rgba(26, 26, 46, 0.97));
+  z-index: -1;
+}
+
+@keyframes rotateBorder {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bannerPop {
+  0%   { opacity: 0; transform: scale(0.72) translateY(-20px); }
+  65%  { transform: scale(1.05) translateY(3px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes bannerGlow {
+  0%, 100% { box-shadow: 0 0 14px rgba(255, 107, 53, 0.35), 0 0 28px rgba(226, 185, 111, 0.15); }
+  50%       { box-shadow: 0 0 26px rgba(255, 107, 53, 0.55), 0 0 52px rgba(226, 185, 111, 0.28), 0 0 80px rgba(126, 200, 227, 0.12); }
 }
 
 /* Result panel */
