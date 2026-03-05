@@ -31,8 +31,12 @@ function buildBonusChips(slots) {
     if (breakdown.multiplier) {
       chips.push({ label: `${prefix}Base`, value: `+${breakdown.base}`, delta: breakdown.base, type: 'base' })
       chips.push({ label: `${prefix}Éléments`, value: `+${breakdown.elementSum}`, delta: breakdown.elementSum, type: 'element' })
+      // Show ingredient emojis directly in the chip label
+      const ingredientEmojis = breakdown.secretRecipe?.ingredients
+        .map(id => MATERIALS[id]?.emoji || '?')
+        .join(' + ') || ''
       chips.push({
-        label: `${prefix}Recette secrète`,
+        label: `${ingredientEmojis} Recette secrète`,
         value: `×${breakdown.multiplier}`,
         delta: breakdown.elementSum * (breakdown.multiplier - 1),
         type: 'secret',
@@ -74,41 +78,62 @@ function BonusChips({ chips, revealedCount }) {
   )
 }
 
-function WeaponCard({ weapon, label, revealed, displayedPower }) {
+function WeaponCard({ weapon, label, revealed, displayedPower, secretRevealed }) {
   if (!weapon) return null
-  // displayedPower: running total (null = no chips, show final power directly)
   const power = displayedPower ?? weapon.power
+
+  // Before secret reveal: show blueprint state (normal name/emoji, no glow)
+  const preTransform = weapon.isSecret && !secretRevealed
+
+  const displayName = preTransform
+    ? (weapon.slots?.map(s => s.blueprint?.name || '?').join(' + ') || weapon.name)
+    : weapon.name
 
   const classNames = [
     styles.weaponCard,
     revealed ? styles.revealed : '',
-    weapon.isSecret ? styles.secretWeapon : '',
+    secretRevealed && weapon.isSecret ? styles.secretWeapon : '',
+    secretRevealed && weapon.isSecret ? styles.transformReveal : '',
   ].filter(Boolean).join(' ')
 
-  const glowStyle = weapon.isSecret && weapon.glowColor
+  const glowStyle = secretRevealed && weapon.isSecret && weapon.glowColor
     ? { '--glow-color': weapon.glowColor }
     : {}
+
+  // Emoji: pre-transform shows blueprint emoji, post-transform shows recipe emoji
+  let emojiContent
+  if (weapon.slots?.length > 1) {
+    emojiContent = weapon.slots.map((s, i) => (
+      <span key={i} className={styles.slotEmoji}>
+        {preTransform ? (s.blueprint?.emoji || '⚔️') : (s.emoji || s.blueprint?.emoji || '⚔️')}
+      </span>
+    ))
+  } else {
+    emojiContent = preTransform
+      ? (weapon.slots?.[0]?.blueprint?.emoji || weapon.emoji)
+      : weapon.emoji
+  }
 
   return (
     <div className={classNames} style={glowStyle}>
       <div className={styles.weaponLabel}>{label}</div>
-      <div className={styles.weaponEmoji}>
-        {weapon.slots?.length > 1
-          ? weapon.slots.map((s, i) => (
-              <span key={i} className={styles.slotEmoji}>
-                {s.emoji || s.blueprint?.emoji || '⚔️'}
-              </span>
-            ))
-          : weapon.emoji
-        }
+      <div
+        key={secretRevealed ? 'emoji-secret' : 'emoji-normal'}
+        className={`${styles.weaponEmoji} ${secretRevealed && weapon.isSecret ? styles.secretEmojiReveal : ''}`}
+      >
+        {emojiContent}
       </div>
-      <div className={styles.weaponName}>{weapon.name}</div>
+      <div
+        key={secretRevealed ? 'name-secret' : 'name-normal'}
+        className={`${styles.weaponName} ${secretRevealed && weapon.isSecret ? styles.secretNameReveal : ''}`}
+      >
+        {displayName}
+      </div>
       <div className={styles.weaponPower}>
         <span className={styles.powerIcon}>⚔</span>
-        {/* key trick: remount span on each power change → CSS animation replays */}
         <span key={power} className={styles.powerNum}>{power}</span>
       </div>
-      {weapon.isSecret && (
+      {secretRevealed && weapon.isSecret && (
         <div className={styles.secretBadge}>RECETTE SECRÈTE</div>
       )}
       {weapon.materials?.length > 0 && (
@@ -124,14 +149,16 @@ function WeaponCard({ weapon, label, revealed, displayedPower }) {
   )
 }
 
-const CHIP_FIRST_DELAY = 450  // ms after card reveal before first chip
-const CHIP_INTERVAL    = 500  // ms between each chip pop-in
-const SCORE_DELAY      = 230  // ms after chip pop-in before score updates
+const CHIP_FIRST_DELAY   = 450  // ms after card reveal before first chip
+const CHIP_INTERVAL      = 500  // ms between each chip pop-in
+const SCORE_DELAY        = 230  // ms after chip pop-in before score updates
+const SECRET_REVEAL_DELAY = 420 // ms after last score before weapon transforms
 
 export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponSlots = [], artefactSlots = [] }) {
   const [step, setStep] = useState(0)
   const [revealedChipCount, setRevealedChipCount] = useState(0)
   const [scoredChipCount, setScoredChipCount]     = useState(0)
+  const [secretRevealed, setSecretRevealed]       = useState(false)
 
   // Computed once — slots don't change during combat
   const [bonusChips] = useState(() => buildBonusChips([...weaponSlots, ...artefactSlots]))
@@ -148,6 +175,7 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
     setStep(0)
     setRevealedChipCount(0)
     setScoredChipCount(0)
+    setSecretRevealed(false)
 
     const timers = []
     bonusChips.forEach((_, i) => {
@@ -161,9 +189,19 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
       ? CHIP_FIRST_DELAY + (bonusChips.length - 1) * CHIP_INTERVAL + SCORE_DELAY
       : 0
 
-    timers.push(setTimeout(() => setStep(1), Math.max(1800, lastScoreTime + 500)))
-    timers.push(setTimeout(() => setStep(2), Math.max(2800, lastScoreTime + 1500)))
-    timers.push(setTimeout(() => setStep(3), Math.max(4200, lastScoreTime + 2900)))
+    // Secret weapon transformation: triggered after all chips are scored
+    if (playerWeapon.isSecret) {
+      timers.push(setTimeout(() => setSecretRevealed(true), lastScoreTime + SECRET_REVEAL_DELAY))
+    }
+
+    // AI reveal waits for the full show (extra time if secret transformation)
+    const readyTime = playerWeapon.isSecret
+      ? lastScoreTime + SECRET_REVEAL_DELAY + 900
+      : lastScoreTime
+
+    timers.push(setTimeout(() => setStep(1), Math.max(1800, readyTime + 500)))
+    timers.push(setTimeout(() => setStep(2), Math.max(2800, readyTime + 1500)))
+    timers.push(setTimeout(() => setStep(3), Math.max(4200, readyTime + 2900)))
 
     return () => timers.forEach(clearTimeout)
   }, [])
@@ -181,6 +219,7 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
             label="Votre arme"
             revealed={step >= 0}
             displayedPower={displayedPower}
+            secretRevealed={secretRevealed}
           />
           <BonusChips chips={bonusChips} revealedCount={revealedChipCount} />
         </div>

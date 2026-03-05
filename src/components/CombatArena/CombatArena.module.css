@@ -136,12 +136,45 @@
 .weaponCard.secretWeapon {
   border-color: var(--glow-color, var(--accent-gold));
   box-shadow: 0 0 24px var(--glow-color, var(--accent-gold)), inset 0 0 16px rgba(226,185,111,0.08);
-  animation: secretShimmer 2s ease infinite;
+  animation: secretShimmer 1.8s ease-in-out infinite;
+}
+
+/* Replaces secretWeapon animation: burst first, then shimmer */
+.weaponCard.transformReveal {
+  animation: glowBurst 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+             secretShimmer 1.8s ease-in-out 0.9s infinite;
+}
+
+@keyframes glowBurst {
+  0%   { border-color: transparent; box-shadow: none; transform: scale(1); }
+  20%  { border-color: var(--glow-color); box-shadow: 0 0 60px var(--glow-color), 0 0 120px var(--glow-color); transform: scale(1.06); }
+  55%  { box-shadow: 0 0 40px var(--glow-color), 0 0 80px var(--glow-color); transform: scale(0.99); }
+  100% { border-color: var(--glow-color); box-shadow: 0 0 24px var(--glow-color); transform: scale(1); }
 }
 
 @keyframes secretShimmer {
-  0%, 100% { box-shadow: 0 0 24px var(--glow-color, var(--accent-gold)); }
-  50% { box-shadow: 0 0 40px var(--glow-color, var(--accent-gold)), 0 0 60px rgba(226,185,111,0.3); }
+  0%, 100% { box-shadow: 0 0 20px var(--glow-color, var(--accent-gold)), 0 0 40px var(--glow-color, var(--accent-gold)); }
+  50%      { box-shadow: 0 0 45px var(--glow-color, var(--accent-gold)), 0 0 90px var(--glow-color, var(--accent-gold)), 0 0 130px var(--glow-color, rgba(226,185,111,0.3)); }
+}
+
+.secretEmojiReveal {
+  animation: secretEmojiPop 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes secretEmojiPop {
+  0%   { opacity: 0; transform: scale(0.2) rotate(-20deg); filter: brightness(6); }
+  50%  { transform: scale(1.55) rotate(10deg); filter: brightness(2.5); }
+  75%  { transform: scale(0.92) rotate(-4deg); filter: brightness(1); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.secretNameReveal {
+  animation: secretNameFadeIn 0.5s ease;
+}
+
+@keyframes secretNameFadeIn {
+  0%   { opacity: 0; transform: translateY(-8px); letter-spacing: 0.2em; filter: blur(3px); }
+  100% { opacity: 1; transform: translateY(0); letter-spacing: normal; filter: blur(0); }
 }
 
 .weaponLabel {
