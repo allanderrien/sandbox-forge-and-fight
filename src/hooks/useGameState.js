@@ -3,6 +3,7 @@ import { MATERIALS } from '../data/materials.js'
 import { drawCards, drawBlueprints } from '../utils/deckManager.js'
 import { forgeSlot } from '../utils/forgeEngine.js'
 import { aiForge } from '../utils/aiLogic.js'
+import { generateOpponentName } from '../data/opponentNames.js'
 
 const CREDITS_PER_ROUND = 3
 const MAX_HP = 4
@@ -38,6 +39,7 @@ const initialState = {
   pendingCarryOver: 0,
   playerHand: [],
   difficulty: 'easy',
+  opponentName: '',
   // Blueprint system
   drawnBlueprints: [],
   blueprintPlacements: 0,
@@ -65,6 +67,7 @@ function gameReducer(state, action) {
         ...initialState,
         phase: 'blueprint',
         difficulty: action.difficulty || 'easy',
+        opponentName: generateOpponentName(),
         drawnBlueprints: blueprints,
         weaponSlots: [makeWeaponSlot(0)],
         artefactSlots: [],

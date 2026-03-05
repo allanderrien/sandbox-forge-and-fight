@@ -20,7 +20,6 @@ function getSynergyLabel(synergyBonus) {
   return null
 }
 
-// Each chip carries a numeric `delta` used to compute the running power total
 function buildBonusChips(slots) {
   const chips = []
   for (const slot of slots) {
@@ -31,7 +30,6 @@ function buildBonusChips(slots) {
     if (breakdown.multiplier) {
       chips.push({ label: `${prefix}Base`, value: `+${breakdown.base}`, delta: breakdown.base, type: 'base' })
       chips.push({ label: `${prefix}Éléments`, value: `+${breakdown.elementSum}`, delta: breakdown.elementSum, type: 'element' })
-      // Show ingredient emojis directly in the chip label
       const ingredientEmojis = breakdown.secretRecipe?.ingredients
         .map(id => MATERIALS[id]?.emoji || '?')
         .join(' + ') || ''
@@ -82,7 +80,6 @@ function WeaponCard({ weapon, label, revealed, displayedPower, secretRevealed })
   if (!weapon) return null
   const power = displayedPower ?? weapon.power
 
-  // Before secret reveal: show blueprint state (normal name/emoji, no glow)
   const preTransform = weapon.isSecret && !secretRevealed
 
   const displayName = preTransform
@@ -102,7 +99,6 @@ function WeaponCard({ weapon, label, revealed, displayedPower, secretRevealed })
 
   const isHeavy = weapon.slots?.some(s => s.blueprint?.category === 'heavy')
 
-  // Emoji: pre-transform shows blueprint emoji, post-transform shows recipe emoji
   let emojiContent
   if (weapon.slots?.length > 1) {
     emojiContent = weapon.slots.map((s, i) => (
@@ -151,23 +147,31 @@ function WeaponCard({ weapon, label, revealed, displayedPower, secretRevealed })
   )
 }
 
-const CHIP_FIRST_DELAY   = 450  // ms after card reveal before first chip
-const CHIP_INTERVAL      = 500  // ms between each chip pop-in
-const SCORE_DELAY        = 230  // ms after chip pop-in before score updates
-const SECRET_REVEAL_DELAY = 420 // ms after last score before weapon transforms
+const CHIP_FIRST_DELAY    = 450
+const CHIP_INTERVAL       = 500
+const SCORE_DELAY         = 230
+const SECRET_REVEAL_DELAY = 420
 
-export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponSlots = [], artefactSlots = [] }) {
+export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponSlots = [], artefactSlots = [], opponentName = 'L\'adversaire' }) {
   const [step, setStep] = useState(0)
-  const [revealedChipCount, setRevealedChipCount] = useState(0)
-  const [scoredChipCount, setScoredChipCount]     = useState(0)
-  const [secretRevealed, setSecretRevealed]       = useState(false)
+  const [revealedChipCount,   setRevealedChipCount]   = useState(0)
+  const [scoredChipCount,     setScoredChipCount]     = useState(0)
+  const [secretRevealed,      setSecretRevealed]      = useState(false)
+  const [aiRevealedChipCount, setAiRevealedChipCount] = useState(0)
+  const [aiScoredChipCount,   setAiScoredChipCount]   = useState(0)
 
-  // Computed once — slots don't change during combat
-  const [bonusChips] = useState(() => buildBonusChips([...weaponSlots, ...artefactSlots]))
+  const [bonusChips]   = useState(() => buildBonusChips([...weaponSlots, ...artefactSlots]))
+  const [aiBonusChips] = useState(() => buildBonusChips(aiWeapon.slots || []))
 
-  // Score only counts chips that have "landed" (delayed after reveal)
   const displayedPower = bonusChips.length > 0
     ? bonusChips.slice(0, scoredChipCount).reduce((sum, c) => sum + (c.delta || 0), 0)
+    : null
+
+  // Snap to actual power once all AI chips are scored (scaling bonus edge case)
+  const aiDisplayedPower = aiBonusChips.length > 0
+    ? (aiScoredChipCount >= aiBonusChips.length
+        ? aiWeapon.power
+        : aiBonusChips.slice(0, aiScoredChipCount).reduce((sum, c) => sum + (c.delta || 0), 0))
     : null
 
   const result = playerWeapon.power > aiWeapon.power ? 'win'
@@ -178,8 +182,12 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
     setRevealedChipCount(0)
     setScoredChipCount(0)
     setSecretRevealed(false)
+    setAiRevealedChipCount(0)
+    setAiScoredChipCount(0)
 
     const timers = []
+
+    // ── Player chips ────────────────────────────────────────────
     bonusChips.forEach((_, i) => {
       const revealAt = CHIP_FIRST_DELAY + i * CHIP_INTERVAL
       const scoreAt  = revealAt + SCORE_DELAY
@@ -187,23 +195,40 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
       timers.push(setTimeout(() => setScoredChipCount(i + 1),   scoreAt))
     })
 
-    const lastScoreTime = bonusChips.length > 0
+    const playerLastScore = bonusChips.length > 0
       ? CHIP_FIRST_DELAY + (bonusChips.length - 1) * CHIP_INTERVAL + SCORE_DELAY
       : 0
 
-    // Secret weapon transformation: triggered after all chips are scored
     if (playerWeapon.isSecret) {
-      timers.push(setTimeout(() => setSecretRevealed(true), lastScoreTime + SECRET_REVEAL_DELAY))
+      timers.push(setTimeout(() => setSecretRevealed(true), playerLastScore + SECRET_REVEAL_DELAY))
     }
 
-    // AI reveal waits for the full show (extra time if secret transformation)
     const readyTime = playerWeapon.isSecret
-      ? lastScoreTime + SECRET_REVEAL_DELAY + 900
-      : lastScoreTime
+      ? playerLastScore + SECRET_REVEAL_DELAY + 900
+      : playerLastScore
 
-    timers.push(setTimeout(() => setStep(1), Math.max(1800, readyTime + 500)))
-    timers.push(setTimeout(() => setStep(2), Math.max(2800, readyTime + 1500)))
-    timers.push(setTimeout(() => setStep(3), Math.max(4200, readyTime + 2900)))
+    // ── Step 1 : AI card reveals ─────────────────────────────────
+    const step1Time = Math.max(1800, readyTime + 500)
+    timers.push(setTimeout(() => setStep(1), step1Time))
+
+    // ── AI chips (start after AI card revealed) ──────────────────
+    aiBonusChips.forEach((_, i) => {
+      const revealAt = step1Time + CHIP_FIRST_DELAY + i * CHIP_INTERVAL
+      const scoreAt  = revealAt + SCORE_DELAY
+      timers.push(setTimeout(() => setAiRevealedChipCount(i + 1), revealAt))
+      timers.push(setTimeout(() => setAiScoredChipCount(i + 1),   scoreAt))
+    })
+
+    const aiLastScore = aiBonusChips.length > 0
+      ? step1Time + CHIP_FIRST_DELAY + (aiBonusChips.length - 1) * CHIP_INTERVAL + SCORE_DELAY
+      : step1Time
+
+    // ── Step 2 : Clash ───────────────────────────────────────────
+    const step2Time = Math.max(aiLastScore + 600, step1Time + 1000)
+    timers.push(setTimeout(() => setStep(2), step2Time))
+
+    // ── Step 3 : Result + continue button ────────────────────────
+    timers.push(setTimeout(() => setStep(3), step2Time + 1400))
 
     return () => timers.forEach(clearTimeout)
   }, [])
@@ -215,10 +240,12 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
   return (
     <div className={`${styles.arena} ${step >= 2 ? styles.clashing : ''}`}>
       <div className={styles.combatants}>
+
         <div className={styles.playerSide}>
+          <div className={styles.teamName}>Vous</div>
           <WeaponCard
             weapon={playerWeapon}
-            label="Votre arme"
+            label="Arme"
             revealed={step >= 0}
             displayedPower={displayedPower}
             secretRevealed={secretRevealed}
@@ -235,15 +262,25 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
           )}
         </div>
 
-        <WeaponCard weapon={aiWeapon} label="Arme de l'IA" revealed={step >= 1} />
+        <div className={styles.aiSide}>
+          <div className={styles.teamName}>{opponentName}</div>
+          <WeaponCard
+            weapon={aiWeapon}
+            label="Arme"
+            revealed={step >= 1}
+            displayedPower={aiDisplayedPower}
+          />
+          <BonusChips chips={aiBonusChips} revealedCount={aiRevealedChipCount} />
+        </div>
+
       </div>
 
       {step >= 3 && (
         <div className={styles.resultRow}>
           <div className={`${styles.resultText} ${styles[result]}`}>
-            {result === 'win' && `Victoire ! (${playerWeapon.power} vs ${aiWeapon.power})`}
+            {result === 'win'  && `Victoire ! (${playerWeapon.power} vs ${aiWeapon.power})`}
             {result === 'lose' && `Défaite... (${playerWeapon.power} vs ${aiWeapon.power})`}
-            {result === 'tie' && `Match nul (${playerWeapon.power} = ${aiWeapon.power}) — −0.5 ♥`}
+            {result === 'tie'  && `Match nul (${playerWeapon.power} = ${aiWeapon.power}) — −0.5 ♥`}
           </div>
           <button className={styles.continueBtn} onClick={onResolve}>
             Continuer →

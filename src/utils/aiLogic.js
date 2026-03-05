@@ -116,7 +116,7 @@ function aiForgeEasy(round, wins) {
 
   const result = forgeSlot(blueprint, selectedCards)
   const variance = level === 1 ? (Math.random() - 0.5) * 2 : (Math.random() - 0.5)
-  const weapon = { ...result, power: Math.max(1, Math.round(result.power + variance)) }
+  const weapon = { ...result, power: Math.max(1, Math.round(result.power + variance)), slots: [{ ...result, blueprint }] }
   return { hand, selectedCards, weapon }
 }
 

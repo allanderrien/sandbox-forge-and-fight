@@ -25,7 +25,7 @@ function MenuScreen({ onStart }) {
         <div className={styles.menuLogo}>⚔️</div>
         <h1 className={styles.menuTitle}>Forge <span>&amp;</span> Fight</h1>
         <p className={styles.menuSubtitle}>
-          Choisissez vos blueprints, forgez vos armes, affrontez l'IA.
+          Choisissez vos blueprints, forgez vos armes, affrontez l'adversaire.
           Atteignez 10 victoires avant de perdre vos 4 points de vie.
         </p>
         <div className={styles.menuRules}>
@@ -93,7 +93,7 @@ export default function App() {
     drawnBlueprints, blueprintPlacements,
     weaponSlots, artefactSlots, focusedSlotKey,
     playerTotalPower, playerWeapon, aiWeapon,
-    roundResult, gameResult, newMaterialsUnlocked,
+    roundResult, gameResult, newMaterialsUnlocked, opponentName,
   } = state
 
   const isForgePhase = phase === 'draw' || phase === 'forge'
@@ -214,6 +214,7 @@ export default function App() {
             onResolve={resolveCombat}
             weaponSlots={weaponSlots}
             artefactSlots={artefactSlots || []}
+            opponentName={opponentName}
           />
         )}
 

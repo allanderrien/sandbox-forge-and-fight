@@ -21,6 +21,24 @@
   gap: 0.5rem;
 }
 
+.aiSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.teamName {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  max-width: 170px;
+  line-height: 1.3;
+}
+
 .bonusChips {
   display: flex;
   flex-direction: column;
@@ -295,7 +313,7 @@
   animation: shakeLeft 0.4s ease 0.1s;
 }
 
-.clashing .combatants > .weaponCard {
+.clashing .aiSide .weaponCard {
   animation: shakeRight 0.4s ease 0.1s;
 }
 
