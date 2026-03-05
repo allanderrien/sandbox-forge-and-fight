@@ -46,14 +46,15 @@ export default function BlueprintPhase({
       <div className={styles.options}>
         <div className={styles.optionsLabel}>Nouvelles options</div>
         <div className={styles.blueprintRow}>
-          {availableBlueprints.map(bp => (
-            <BlueprintCard
-              key={bp.id}
-              blueprint={bp}
-              selected={selectedBlueprintId === bp.id}
-              disabled={blueprintPlacements >= 2}
-              onClick={() => handleBlueprintClick(bp.id)}
-            />
+          {availableBlueprints.map((bp, i) => (
+            <div key={bp.id} className={styles.flipWrapper} style={{ '--i': i }}>
+              <BlueprintCard
+                blueprint={bp}
+                selected={selectedBlueprintId === bp.id}
+                disabled={blueprintPlacements >= 2}
+                onClick={() => handleBlueprintClick(bp.id)}
+              />
+            </div>
           ))}
         </div>
       </div>

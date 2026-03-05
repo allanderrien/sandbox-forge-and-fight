@@ -23,8 +23,8 @@
 }
 
 .cardWrapper {
-  animation: dealCard 0.35s ease both;
-  animation-delay: calc(var(--i) * 0.1s);
+  animation: cardFlip 0.52s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation-delay: calc(var(--i) * 0.11s);
   touch-action: none;
 }
 
@@ -33,15 +33,11 @@
   cursor: grabbing;
 }
 
-@keyframes dealCard {
-  from {
-    opacity: 0;
-    transform: translateY(-30px) scale(0.85);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+@keyframes cardFlip {
+  0%   { transform: perspective(700px) rotateY(-90deg); opacity: 0; }
+  55%  { transform: perspective(700px) rotateY(12deg);  opacity: 1; }
+  78%  { transform: perspective(700px) rotateY(-5deg); }
+  100% { transform: none; opacity: 1; }
 }
 
 .empty {
