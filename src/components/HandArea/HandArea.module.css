@@ -57,6 +57,28 @@
   animation: pulse 1.5s ease infinite;
 }
 
+.rerollBtn {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  background: transparent;
+  border: 1px solid rgba(226, 185, 111, 0.35);
+  border-radius: 8px;
+  padding: 0.3rem 0.9rem;
+  letter-spacing: 0.04em;
+  transition: border-color 0.2s, background 0.2s, opacity 0.2s;
+}
+
+.rerollBtn:hover:not(:disabled) {
+  background: rgba(226, 185, 111, 0.1);
+  border-color: var(--accent-gold);
+}
+
+.rerollBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }

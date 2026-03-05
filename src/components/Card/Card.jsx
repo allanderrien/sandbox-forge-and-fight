@@ -31,7 +31,7 @@ export default function Card({ cardId, onClick, disabled, size = 'normal', selec
       <div className={styles.shine} />
 
       <div className={styles.costBadge} data-cost={cost}>
-        {cost === 0 ? 'FREE' : `${cost}⚗`}
+        {cost === 0 ? 'FREE' : `${cost}🪙`}
       </div>
 
       <div className={styles.emoji}>{material.emoji}</div>
@@ -42,7 +42,7 @@ export default function Card({ cardId, onClick, disabled, size = 'normal', selec
       </div>
 
       {material.carryOver && (
-        <div className={styles.carryOverBadge}>+{material.carryOver}⚗ →</div>
+        <div className={styles.carryOverBadge}>+{material.carryOver}🪙→</div>
       )}
       {material.tier === 2 && !material.carryOver && (
         <div className={styles.tierBadge}>✦</div>

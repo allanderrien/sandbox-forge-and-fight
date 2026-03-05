@@ -48,7 +48,7 @@ export default function ForgeArea({
 
       {pendingCarryOver > 0 && (
         <div className={styles.carryOverInfo}>
-          🔮 +{pendingCarryOver} crédit{pendingCarryOver > 1 ? 's' : ''} reporté{pendingCarryOver > 1 ? 's' : ''} au prochain round
+          🪙 +{pendingCarryOver} crédit{pendingCarryOver > 1 ? 's' : ''} reporté{pendingCarryOver > 1 ? 's' : ''} au prochain round
         </div>
       )}
 

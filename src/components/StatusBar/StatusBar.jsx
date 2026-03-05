@@ -41,7 +41,7 @@ export default function StatusBar({ round, playerHP, playerWins, credits, carryO
         {phase === 'forge' || phase === 'draw' ? (
           <div className={styles.creditsGroup}>
             <div className={styles.credits}>
-              <span className={styles.creditsIcon}>⚗️</span>
+              <span className={styles.creditsIcon}>🪙</span>
               <span className={styles.creditsValue}>{credits}</span>
               <span className={styles.label}>crédits</span>
             </div>
@@ -55,7 +55,7 @@ export default function StatusBar({ round, playerHP, playerWins, credits, carryO
         ) : null}
         {phase === 'result' && carryOverCredits > 0 && (
           <div className={styles.carryOverBanner}>
-            🔮 +{carryOverCredits} crédit{carryOverCredits > 1 ? 's' : ''} reporté{carryOverCredits > 1 ? 's' : ''}
+            🪙 +{carryOverCredits} crédit{carryOverCredits > 1 ? 's' : ''} reporté{carryOverCredits > 1 ? 's' : ''}
           </div>
         )}
       </div>

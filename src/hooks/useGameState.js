@@ -342,6 +342,12 @@ function gameReducer(state, action) {
       }
     }
 
+    case 'REROLL_HAND': {
+      if (state.credits < 1 || state.playerHand.length === 0) return state
+      const newHand = drawCards(state.playerWins, state.playerHand.length)
+      return { ...state, credits: state.credits - 1, playerHand: newHand }
+    }
+
     default:
       return state
   }
@@ -359,12 +365,13 @@ export function useGameState() {
   const removeElement = useCallback((slotKey, elementIndex) => dispatch({ type: 'REMOVE_ELEMENT', slotKey, elementIndex }), [])
   const forge = useCallback(() => dispatch({ type: 'FORGE' }), [])
   const resolveCombat = useCallback(() => dispatch({ type: 'RESOLVE_COMBAT' }), [])
+  const rerollHand = useCallback(() => dispatch({ type: 'REROLL_HAND' }), [])
 
   return {
     state,
     startGame, startRound,
     placeBlueprint, confirmBlueprints,
     selectSlot, applyElement, removeElement,
-    forge, resolveCombat,
+    forge, resolveCombat, rerollHand,
   }
 }

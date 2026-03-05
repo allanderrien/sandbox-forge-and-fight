@@ -74,6 +74,7 @@ export default function App() {
     removeElement,
     forge,
     resolveCombat,
+    rerollHand,
   } = useGameState()
 
   const {
@@ -169,6 +170,7 @@ export default function App() {
                 credits={credits}
                 focusedSlotKey={focusedSlotKey}
                 focusedSlot={focusedSlot}
+                onReroll={rerollHand}
               />
 
               <div className={styles.divider}>

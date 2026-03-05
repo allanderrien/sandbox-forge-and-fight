@@ -39,10 +39,12 @@ function DraggableCardWrapper({ card, index, draggableDisabled, cardDisabled, on
   )
 }
 
-export default function HandArea({ hand, onCardClick, disabled, credits, focusedSlotKey, focusedSlot }) {
+export default function HandArea({ hand, onCardClick, disabled, credits, focusedSlotKey, focusedSlot, onReroll }) {
   const noSlotSelected = !focusedSlotKey
   const slotFull = focusedSlot && focusedSlot.blueprint
     && focusedSlot.elements.length >= focusedSlot.blueprint.elementSlots
+
+  const canReroll = !disabled && hand.length > 0 && credits >= 1
 
   return (
     <section className={styles.section}>
@@ -74,6 +76,17 @@ export default function HandArea({ hand, onCardClick, disabled, credits, focused
           <p className={styles.empty}>Tous les matériaux sont placés</p>
         )}
       </div>
+
+      {!disabled && (
+        <button
+          className={styles.rerollBtn}
+          onClick={onReroll}
+          disabled={!canReroll}
+          title={credits < 1 ? 'Pas assez de crédits' : 'Remplacer toutes les cartes restantes'}
+        >
+          ↺ Re-roll — 1🪙
+        </button>
+      )}
     </section>
   )
 }

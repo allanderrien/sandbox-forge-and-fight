@@ -22,7 +22,7 @@ export default function BlueprintCard({ blueprint, onClick, selected, disabled }
   const specialLabel = {
     fire_bonus: '+2 🔥/⚡',
     diversity: '+1/type unique',
-    carry_over_1: '+1⚗ reporté',
+    carry_over_1: '+1🪙 reporté',
     recipe_bonus: '+4 recette secrète',
     rune_bonus: '+2/🔮',
     vengeance: '+5 si défaite',
