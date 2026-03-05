@@ -20,46 +20,52 @@ function getSynergyLabel(synergyBonus) {
   return null
 }
 
+// Each chip carries a numeric `delta` used to compute the running power total
 function buildBonusChips(slots) {
   const chips = []
   for (const slot of slots) {
     const { breakdown, blueprint } = slot
     if (!breakdown) continue
-    const slotPrefix = slots.length > 1 ? `${blueprint?.emoji || ''}` : ''
+    const prefix = slots.length > 1 ? `${blueprint?.emoji || ''} ` : ''
 
     if (breakdown.multiplier) {
-      chips.push({ label: `${slotPrefix} Recette secrète ×${breakdown.multiplier}`, value: null, type: 'secret' })
-      if (breakdown.elementSum > 0)
-        chips.push({ label: `${slotPrefix} Éléments`, value: `+${breakdown.elementSum}`, type: 'element' })
+      chips.push({ label: `${prefix}Base`, value: `+${breakdown.base}`, delta: breakdown.base, type: 'base' })
+      chips.push({ label: `${prefix}Éléments`, value: `+${breakdown.elementSum}`, delta: breakdown.elementSum, type: 'element' })
+      chips.push({
+        label: `${prefix}Recette secrète`,
+        value: `×${breakdown.multiplier}`,
+        delta: breakdown.elementSum * (breakdown.multiplier - 1),
+        type: 'secret',
+      })
+      if (breakdown.specialBonus > 0) {
+        const label = SPECIAL_LABELS[blueprint?.special] || blueprint?.special || ''
+        chips.push({ label: `${prefix}${label}`, value: `+${breakdown.specialBonus}`, delta: breakdown.specialBonus, type: 'special' })
+      }
     } else {
       if (breakdown.base > 0)
-        chips.push({ label: `${slotPrefix} Base`, value: `+${breakdown.base}`, type: 'base' })
+        chips.push({ label: `${prefix}Base`, value: `+${breakdown.base}`, delta: breakdown.base, type: 'base' })
       if (breakdown.elementSum > 0)
-        chips.push({ label: `${slotPrefix} Éléments`, value: `+${breakdown.elementSum}`, type: 'element' })
+        chips.push({ label: `${prefix}Éléments`, value: `+${breakdown.elementSum}`, delta: breakdown.elementSum, type: 'element' })
       if (breakdown.synergyBonus > 0) {
-        const label = getSynergyLabel(breakdown.synergyBonus)
-        chips.push({ label: `${slotPrefix} ${label}`, value: `+${breakdown.synergyBonus}`, type: 'synergy' })
+        const synLabel = getSynergyLabel(breakdown.synergyBonus)
+        chips.push({ label: `${prefix}${synLabel}`, value: `+${breakdown.synergyBonus}`, delta: breakdown.synergyBonus, type: 'synergy' })
       }
       if (breakdown.specialBonus > 0 && blueprint?.special) {
-        const label = SPECIAL_LABELS[blueprint.special] || blueprint.special
-        chips.push({ label: `${slotPrefix} ${label}`, value: `+${breakdown.specialBonus}`, type: 'special' })
+        const spLabel = SPECIAL_LABELS[blueprint.special] || blueprint.special
+        chips.push({ label: `${prefix}${spLabel}`, value: `+${breakdown.specialBonus}`, delta: breakdown.specialBonus, type: 'special' })
       }
     }
   }
   return chips
 }
 
-function BonusChips({ chips }) {
-  if (!chips.length) return null
+function BonusChips({ chips, revealedCount }) {
+  if (!chips.length || revealedCount === 0) return null
   return (
     <div className={styles.bonusChips}>
       <div className={styles.bonusTitle}>Détail du score</div>
-      {chips.map((chip, i) => (
-        <div
-          key={i}
-          className={`${styles.chip} ${styles[`chip_${chip.type}`]}`}
-          style={{ animationDelay: `${0.35 + i * 0.13}s` }}
-        >
+      {chips.slice(0, revealedCount).map((chip, i) => (
+        <div key={i} className={`${styles.chip} ${styles[`chip_${chip.type}`]}`}>
           <span className={styles.chipLabel}>{chip.label}</span>
           {chip.value && <span className={styles.chipValue}>{chip.value}</span>}
         </div>
@@ -68,8 +74,10 @@ function BonusChips({ chips }) {
   )
 }
 
-function WeaponCard({ weapon, label, revealed }) {
+function WeaponCard({ weapon, label, revealed, displayedPower }) {
   if (!weapon) return null
+  // displayedPower: running total (null = no chips, show final power directly)
+  const power = displayedPower ?? weapon.power
 
   const classNames = [
     styles.weaponCard,
@@ -88,7 +96,8 @@ function WeaponCard({ weapon, label, revealed }) {
       <div className={styles.weaponName}>{weapon.name}</div>
       <div className={styles.weaponPower}>
         <span className={styles.powerIcon}>⚔</span>
-        <span className={styles.powerNum}>{weapon.power}</span>
+        {/* key trick: remount span on each power change → CSS animation replays */}
+        <span key={power} className={styles.powerNum}>{power}</span>
       </div>
       {weapon.isSecret && (
         <div className={styles.secretBadge}>RECETTE SECRÈTE</div>
@@ -106,21 +115,41 @@ function WeaponCard({ weapon, label, revealed }) {
   )
 }
 
+const CHIP_FIRST_DELAY = 400  // ms after card reveal before first chip
+const CHIP_INTERVAL    = 220  // ms between each chip
+
 export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponSlots = [], artefactSlots = [] }) {
   const [step, setStep] = useState(0)
-  // 0 = show player weapon + chips, 1 = reveal ai weapon, 2 = show clash, 3 = done
+  const [revealedChipCount, setRevealedChipCount] = useState(0)
+
+  // Computed once — slots don't change during combat
+  const [bonusChips] = useState(() => buildBonusChips([...weaponSlots, ...artefactSlots]))
+
+  // Running power total based on chips revealed so far
+  const displayedPower = bonusChips.length > 0
+    ? bonusChips.slice(0, revealedChipCount).reduce((sum, c) => sum + (c.delta || 0), 0)
+    : null
 
   const result = playerWeapon.power > aiWeapon.power ? 'win'
     : playerWeapon.power < aiWeapon.power ? 'lose' : 'tie'
 
-  const bonusChips = buildBonusChips([...weaponSlots, ...artefactSlots])
-
   useEffect(() => {
     setStep(0)
-    const t1 = setTimeout(() => setStep(1), 1400)
-    const t2 = setTimeout(() => setStep(2), 2400)
-    const t3 = setTimeout(() => setStep(3), 3800)
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+    setRevealedChipCount(0)
+
+    // Reveal each chip sequentially
+    const chipTimers = bonusChips.map((_, i) =>
+      setTimeout(() => setRevealedChipCount(i + 1), CHIP_FIRST_DELAY + i * CHIP_INTERVAL)
+    )
+
+    const t1 = setTimeout(() => setStep(1), 1800)
+    const t2 = setTimeout(() => setStep(2), 2800)
+    const t3 = setTimeout(() => setStep(3), 4200)
+
+    return () => {
+      chipTimers.forEach(clearTimeout)
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3)
+    }
   }, [])
 
   const clashClass = step >= 2
@@ -131,8 +160,13 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
     <div className={`${styles.arena} ${step >= 2 ? styles.clashing : ''}`}>
       <div className={styles.combatants}>
         <div className={styles.playerSide}>
-          <WeaponCard weapon={playerWeapon} label="Votre arme" revealed={step >= 0} />
-          {step >= 0 && <BonusChips chips={bonusChips} />}
+          <WeaponCard
+            weapon={playerWeapon}
+            label="Votre arme"
+            revealed={step >= 0}
+            displayedPower={displayedPower}
+          />
+          <BonusChips chips={bonusChips} revealedCount={revealedChipCount} />
         </div>
 
         <div className={`${styles.vsZone} ${clashClass}`}>
