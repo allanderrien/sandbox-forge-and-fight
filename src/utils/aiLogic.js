@@ -95,7 +95,8 @@ function aiForgeEasy(round, wins) {
   }
   const hand = drawCards(wins, 3)
   const level = getLevel(round)
-  const [blueprint] = drawBlueprints(round)
+  const allBps = drawBlueprints(round)
+  const [blueprint] = allBps.filter(bp => bp.category !== 'artefact').concat(allBps)
 
   let selectedCards
   if (level >= 3) {
@@ -116,7 +117,7 @@ function aiForgeEasy(round, wins) {
 
   const result = forgeSlot(blueprint, selectedCards)
   const variance = level === 1 ? (Math.random() - 0.5) * 2 : (Math.random() - 0.5)
-  const weapon = { ...result, power: Math.max(1, Math.round(result.power + variance)), slots: [{ ...result, blueprint }] }
+  const weapon = { ...result, power: Math.max(1, Math.round(result.power + variance)), slots: [{ ...result, blueprint }], materials: selectedCards.map(c => c.id) }
   return { hand, selectedCards, weapon }
 }
 
@@ -124,19 +125,21 @@ function aiForgeEasy(round, wins) {
 
 function aiForgeNormal(round, wins) {
   const hand = drawCards(wins, 4)
-  const blueprints = drawBlueprints(round)
+  const allBps = drawBlueprints(round)
+  const weaponBps = allBps.filter(bp => bp.category !== 'artefact')
+  const bpPool = weaponBps.length > 0 ? weaponBps : allBps
 
   // Pick better blueprint by basePower
-  const [primary, secondary] = blueprints[0].basePower >= blueprints[1].basePower
-    ? [blueprints[0], blueprints[1]]
-    : [blueprints[1], blueprints[0]]
+  const [primary, secondary] = (bpPool[0]?.basePower ?? 0) >= (bpPool[1]?.basePower ?? -1)
+    ? [bpPool[0], bpPool[1]]
+    : [bpPool[1], bpPool[0]]
 
   const secret = primary.elementSlots === 3 ? trySecretRecipe(hand) : null
   const selectedCards = secret || pickCardsForSpecial(hand, primary, Math.min(primary.elementSlots, hand.length))
   const result = forgeSlot(primary, selectedCards)
 
-  // Second slot from round 4 (only light blueprints, 1 slot each)
-  if (round >= 4 && primary.slotsRequired === 1 && secondary.slotsRequired === 1) {
+  // Second slot from round 4 (only light weapon blueprints, 1 slot each)
+  if (round >= 4 && secondary && primary.slotsRequired === 1 && secondary.slotsRequired === 1 && secondary.category !== 'artefact') {
     const usedUids = new Set(selectedCards.map(c => c.uid))
     const remaining = hand.filter(c => !usedUids.has(c.uid))
     const selected2 = pickBestCards(remaining, Math.min(secondary.elementSlots, remaining.length))
@@ -145,18 +148,21 @@ function aiForgeNormal(round, wins) {
       ...mergeWeapons(result, result2),
       power: Math.max(1, result.power + result2.power),
       slots: [{ ...result, blueprint: primary }, { ...result2, blueprint: secondary }],
+      materials: [...selectedCards, ...selected2].map(c => c.id),
     }
     return { hand, selectedCards, weapon }
   }
 
-  return { hand, selectedCards, weapon: { ...result, power: Math.max(1, result.power), slots: [{ ...result, blueprint: primary }] } }
+  return { hand, selectedCards, weapon: { ...result, power: Math.max(1, result.power), slots: [{ ...result, blueprint: primary }], materials: selectedCards.map(c => c.id) } }
 }
 
 // ── Hard — optimisation complète + scaling par round ─────────────────────
 
 function aiForgeHard(round, wins, playerHP, lastRoundResult) {
   const hand = drawCards(wins, 5)
-  const blueprints = drawBlueprints(round)
+  const allBps = drawBlueprints(round)
+  const weaponBps = allBps.filter(bp => bp.category !== 'artefact')
+  const bpPool = weaponBps.length > 0 ? weaponBps : allBps
   const context = { playerHP, lastRoundResult, allElements: hand }
 
   function estimateValue(bp) {
@@ -170,9 +176,9 @@ function aiForgeHard(round, wins, playerHP, lastRoundResult) {
     return score
   }
 
-  const [primary, secondary] = estimateValue(blueprints[0]) >= estimateValue(blueprints[1])
-    ? [blueprints[0], blueprints[1]]
-    : [blueprints[1], blueprints[0]]
+  const [primary, secondary] = estimateValue(bpPool[0]) >= estimateValue(bpPool[1] ?? bpPool[0])
+    ? [bpPool[0], bpPool[1]]
+    : [bpPool[1], bpPool[0]]
 
   const secret = primary.elementSlots === 3 ? trySecretRecipe(hand) : null
   const selectedCards = secret || pickCardsForSpecial(hand, primary, Math.min(primary.elementSlots, hand.length))
@@ -182,7 +188,7 @@ function aiForgeHard(round, wins, playerHP, lastRoundResult) {
   const scalingBonus = Math.floor((round - 1) / 3)
 
   let weapon
-  if (round >= 4 && primary.slotsRequired === 1 && secondary.slotsRequired === 1) {
+  if (round >= 4 && secondary && primary.slotsRequired === 1 && secondary.slotsRequired === 1 && secondary.category !== 'artefact') {
     const usedUids = new Set(selectedCards.map(c => c.uid))
     const remaining = hand.filter(c => !usedUids.has(c.uid))
     const selected2 = pickCardsForSpecial(remaining, secondary, Math.min(secondary.elementSlots, remaining.length))
@@ -191,9 +197,10 @@ function aiForgeHard(round, wins, playerHP, lastRoundResult) {
       ...mergeWeapons(result, result2),
       power: result.power + result2.power + scalingBonus,
       slots: [{ ...result, blueprint: primary }, { ...result2, blueprint: secondary }],
+      materials: [...selectedCards, ...selected2].map(c => c.id),
     }
   } else {
-    weapon = { ...result, power: result.power + scalingBonus, slots: [{ ...result, blueprint: primary }] }
+    weapon = { ...result, power: result.power + scalingBonus, slots: [{ ...result, blueprint: primary }], materials: selectedCards.map(c => c.id) }
   }
 
   // Légère variance positive (0 à +1)
