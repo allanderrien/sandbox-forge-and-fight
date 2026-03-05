@@ -197,6 +197,14 @@
   font-size: 2rem;
 }
 
+.heavyEmoji {
+  font-size: 3rem;
+}
+
+.heavySlotEmoji {
+  font-size: 2.4rem;
+}
+
 .weaponName {
   font-size: 0.85rem;
   font-weight: 700;

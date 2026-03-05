@@ -1,7 +1,7 @@
 export const BLUEPRINTS = {
   // ── One-handed (slotsRequired=1, minRound=1) ──────────────────────────────
   dague: {
-    id: 'dague', name: 'Dague', emoji: '🗡️', category: 'light',
+    id: 'dague', name: 'Dague', emoji: '🔪', category: 'light',
     slotsRequired: 1, elementSlots: 1, basePower: 5, special: null,
     minRound: 1,
     description: 'Légère et précise. Puissante même avec un seul élément.',
@@ -34,6 +34,13 @@ export const BLUEPRINTS = {
     minRound: 1,
     description: '+1 par type d\'élément unique dans ce slot.',
     color: '#7bc67e', colorDark: '#27ae60',
+  },
+  bouclier: {
+    id: 'bouclier', name: 'Bouclier', emoji: '🛡️', category: 'light',
+    slotsRequired: 1, elementSlots: 1, basePower: 4, special: 'bloodstone',
+    minRound: 1,
+    description: '+2 par PV perdu (max +6). La douleur forgea les meilleurs défenseurs.',
+    color: '#aab4c4', colorDark: '#5d6d7e',
   },
   epee_longue: {
     id: 'epee_longue', name: 'Épée longue', emoji: '🗡️', category: 'light',
@@ -111,6 +118,6 @@ export const BLUEPRINTS = {
   },
 }
 
-export const LIGHT_BLUEPRINT_IDS = ['dague', 'gourdin', 'epee_courte', 'hache', 'lance', 'epee_longue']
+export const LIGHT_BLUEPRINT_IDS = ['dague', 'gourdin', 'epee_courte', 'hache', 'lance', 'bouclier', 'epee_longue']
 export const HEAVY_BLUEPRINT_IDS = ['epee_deux_mains', 'masse_guerre', 'faux', 'arc_guerre']
 export const ARTEFACT_BLUEPRINT_IDS = ['orbe_vengeance', 'grimoire', 'pierre_sang', 'amulette_fortune', 'talisman_acier']

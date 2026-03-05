@@ -100,11 +100,13 @@ function WeaponCard({ weapon, label, revealed, displayedPower, secretRevealed })
     ? { '--glow-color': weapon.glowColor }
     : {}
 
+  const isHeavy = weapon.slots?.some(s => s.blueprint?.category === 'heavy')
+
   // Emoji: pre-transform shows blueprint emoji, post-transform shows recipe emoji
   let emojiContent
   if (weapon.slots?.length > 1) {
     emojiContent = weapon.slots.map((s, i) => (
-      <span key={i} className={styles.slotEmoji}>
+      <span key={i} className={`${styles.slotEmoji} ${isHeavy ? styles.heavySlotEmoji : ''}`}>
         {preTransform ? (s.blueprint?.emoji || '⚔️') : (s.emoji || s.blueprint?.emoji || '⚔️')}
       </span>
     ))
@@ -119,7 +121,7 @@ function WeaponCard({ weapon, label, revealed, displayedPower, secretRevealed })
       <div className={styles.weaponLabel}>{label}</div>
       <div
         key={secretRevealed ? 'emoji-secret' : 'emoji-normal'}
-        className={`${styles.weaponEmoji} ${secretRevealed && weapon.isSecret ? styles.secretEmojiReveal : ''}`}
+        className={`${styles.weaponEmoji} ${isHeavy ? styles.heavyEmoji : ''} ${secretRevealed && weapon.isSecret ? styles.secretEmojiReveal : ''}`}
       >
         {emojiContent}
       </div>
