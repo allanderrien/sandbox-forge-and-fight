@@ -41,16 +41,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.18rem 0.5rem;
-  border-radius: 6px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  animation: chipPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  padding: 0.25rem 0.6rem;
+  border-radius: 7px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  animation: chipPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes chipPop {
-  from { opacity: 0; transform: scale(0.6) translateY(6px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  0%   { opacity: 0; transform: scale(0.3) translateY(10px); }
+  55%  { opacity: 1; transform: scale(1.14) translateY(-3px); }
+  75%  { transform: scale(0.97) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes chipFade {
@@ -182,12 +184,13 @@
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--text-primary);
-  animation: powerUpdate 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: powerUpdate 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes powerUpdate {
-  0%   { transform: scale(0.65); color: var(--accent-gold); }
-  55%  { transform: scale(1.25); color: var(--accent-gold); }
+  0%   { transform: scale(0.5);  color: var(--accent-gold); }
+  55%  { transform: scale(1.45); color: var(--accent-gold); }
+  75%  { transform: scale(0.95); }
   100% { transform: scale(1);    color: var(--text-primary); }
 }
 

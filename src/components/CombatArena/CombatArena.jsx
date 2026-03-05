@@ -115,19 +115,21 @@ function WeaponCard({ weapon, label, revealed, displayedPower }) {
   )
 }
 
-const CHIP_FIRST_DELAY = 400  // ms after card reveal before first chip
-const CHIP_INTERVAL    = 220  // ms between each chip
+const CHIP_FIRST_DELAY = 450  // ms after card reveal before first chip
+const CHIP_INTERVAL    = 500  // ms between each chip pop-in
+const SCORE_DELAY      = 230  // ms after chip pop-in before score updates
 
 export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponSlots = [], artefactSlots = [] }) {
   const [step, setStep] = useState(0)
   const [revealedChipCount, setRevealedChipCount] = useState(0)
+  const [scoredChipCount, setScoredChipCount]     = useState(0)
 
   // Computed once — slots don't change during combat
   const [bonusChips] = useState(() => buildBonusChips([...weaponSlots, ...artefactSlots]))
 
-  // Running power total based on chips revealed so far
+  // Score only counts chips that have "landed" (delayed after reveal)
   const displayedPower = bonusChips.length > 0
-    ? bonusChips.slice(0, revealedChipCount).reduce((sum, c) => sum + (c.delta || 0), 0)
+    ? bonusChips.slice(0, scoredChipCount).reduce((sum, c) => sum + (c.delta || 0), 0)
     : null
 
   const result = playerWeapon.power > aiWeapon.power ? 'win'
@@ -136,20 +138,25 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
   useEffect(() => {
     setStep(0)
     setRevealedChipCount(0)
+    setScoredChipCount(0)
 
-    // Reveal each chip sequentially
-    const chipTimers = bonusChips.map((_, i) =>
-      setTimeout(() => setRevealedChipCount(i + 1), CHIP_FIRST_DELAY + i * CHIP_INTERVAL)
-    )
+    const timers = []
+    bonusChips.forEach((_, i) => {
+      const revealAt = CHIP_FIRST_DELAY + i * CHIP_INTERVAL
+      const scoreAt  = revealAt + SCORE_DELAY
+      timers.push(setTimeout(() => setRevealedChipCount(i + 1), revealAt))
+      timers.push(setTimeout(() => setScoredChipCount(i + 1),   scoreAt))
+    })
 
-    const t1 = setTimeout(() => setStep(1), 1800)
-    const t2 = setTimeout(() => setStep(2), 2800)
-    const t3 = setTimeout(() => setStep(3), 4200)
+    const lastScoreTime = bonusChips.length > 0
+      ? CHIP_FIRST_DELAY + (bonusChips.length - 1) * CHIP_INTERVAL + SCORE_DELAY
+      : 0
 
-    return () => {
-      chipTimers.forEach(clearTimeout)
-      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3)
-    }
+    timers.push(setTimeout(() => setStep(1), Math.max(1800, lastScoreTime + 500)))
+    timers.push(setTimeout(() => setStep(2), Math.max(2800, lastScoreTime + 1500)))
+    timers.push(setTimeout(() => setStep(3), Math.max(4200, lastScoreTime + 2900)))
+
+    return () => timers.forEach(clearTimeout)
   }, [])
 
   const clashClass = step >= 2
