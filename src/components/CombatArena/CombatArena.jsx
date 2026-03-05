@@ -92,7 +92,16 @@ function WeaponCard({ weapon, label, revealed, displayedPower }) {
   return (
     <div className={classNames} style={glowStyle}>
       <div className={styles.weaponLabel}>{label}</div>
-      <div className={styles.weaponEmoji}>{weapon.emoji}</div>
+      <div className={styles.weaponEmoji}>
+        {weapon.slots?.length > 1
+          ? weapon.slots.map((s, i) => (
+              <span key={i} className={styles.slotEmoji}>
+                {s.emoji || s.blueprint?.emoji || '⚔️'}
+              </span>
+            ))
+          : weapon.emoji
+        }
+      </div>
       <div className={styles.weaponName}>{weapon.name}</div>
       <div className={styles.weaponPower}>
         <span className={styles.powerIcon}>⚔</span>
