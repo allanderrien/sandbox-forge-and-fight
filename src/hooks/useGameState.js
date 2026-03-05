@@ -73,7 +73,7 @@ function gameReducer(state, action) {
 
     case 'START_ROUND': {
       const earned = state.carryOverCredits
-      const newMaterialsUnlocked = state.playerWins === 4 || state.playerWins === 7
+      const newMaterialsUnlocked = state.round === 4 || state.round === 7
       const count = targetWeaponCount(state.round)
 
       // Persist blueprints, clear elements; expand slots if threshold reached

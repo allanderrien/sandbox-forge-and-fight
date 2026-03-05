@@ -53,18 +53,18 @@ function MenuScreen({ onStart }) {
   )
 }
 
-function UnlockBanner({ wins }) {
-  if (wins === 4) {
+function UnlockBanner({ round }) {
+  if (round === 4) {
     return (
       <div className={styles.unlockBanner}>
         ✨ Round 4 — Nouveaux matériaux + armes lourdes débloqués !
       </div>
     )
   }
-  if (wins === 7) {
+  if (round === 7) {
     return (
       <div className={styles.unlockBanner}>
-        🌟 Artefacts débloqués — synergies rares disponibles !
+        🌟 Round 7 — Artefacts débloqués !
       </div>
     )
   }
@@ -146,7 +146,7 @@ export default function App() {
       />
 
       <main className={styles.main}>
-        {newMaterialsUnlocked && <UnlockBanner wins={playerWins} />}
+        {newMaterialsUnlocked && <UnlockBanner round={round} />}
 
         {phase === 'blueprint' && (
           <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
