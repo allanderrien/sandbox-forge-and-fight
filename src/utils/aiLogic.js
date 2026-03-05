@@ -141,11 +141,15 @@ function aiForgeNormal(round, wins) {
     const remaining = hand.filter(c => !usedUids.has(c.uid))
     const selected2 = pickBestCards(remaining, Math.min(secondary.elementSlots, remaining.length))
     const result2 = forgeSlot(secondary, selected2)
-    const weapon = { ...mergeWeapons(result, result2), power: Math.max(1, result.power + result2.power) }
+    const weapon = {
+      ...mergeWeapons(result, result2),
+      power: Math.max(1, result.power + result2.power),
+      slots: [{ ...result, blueprint: primary }, { ...result2, blueprint: secondary }],
+    }
     return { hand, selectedCards, weapon }
   }
 
-  return { hand, selectedCards, weapon: { ...result, power: Math.max(1, result.power) } }
+  return { hand, selectedCards, weapon: { ...result, power: Math.max(1, result.power), slots: [{ ...result, blueprint: primary }] } }
 }
 
 // ── Hard — optimisation complète + scaling par round ─────────────────────
@@ -183,9 +187,13 @@ function aiForgeHard(round, wins, playerHP, lastRoundResult) {
     const remaining = hand.filter(c => !usedUids.has(c.uid))
     const selected2 = pickCardsForSpecial(remaining, secondary, Math.min(secondary.elementSlots, remaining.length))
     const result2 = forgeSlot(secondary, selected2, context)
-    weapon = { ...mergeWeapons(result, result2), power: result.power + result2.power + scalingBonus }
+    weapon = {
+      ...mergeWeapons(result, result2),
+      power: result.power + result2.power + scalingBonus,
+      slots: [{ ...result, blueprint: primary }, { ...result2, blueprint: secondary }],
+    }
   } else {
-    weapon = { ...result, power: result.power + scalingBonus }
+    weapon = { ...result, power: result.power + scalingBonus, slots: [{ ...result, blueprint: primary }] }
   }
 
   // Légère variance positive (0 à +1)

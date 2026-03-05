@@ -31,10 +31,10 @@ function MenuScreen({ onStart }) {
         <div className={styles.menuRules}>
           <div className={styles.ruleItem}>📜 2 blueprints proposés par round</div>
           <div className={styles.ruleItem}>🃏 5 cartes tirées, 3 crédits</div>
-          <div className={styles.ruleItem}>⚔️ Armes lourdes débloquées à 4 victoires</div>
+          <div className={styles.ruleItem}>⚔️ Armes lourdes débloquées au round 4</div>
           <div className={styles.ruleItem}>🏆 10 victoires pour gagner</div>
           <div className={styles.ruleItem}>💀 4 défaites = game over</div>
-          <div className={styles.ruleItem}>✨ Recettes secrètes = puissance ×2</div>
+          <div className={styles.ruleItem}>✨ Recettes secrètes = puissance multipliée</div>
         </div>
         <p className={styles.difficultyLabel}>Choisissez une difficulté</p>
         <div className={styles.difficultyPicker}>
@@ -57,7 +57,7 @@ function UnlockBanner({ wins }) {
   if (wins === 4) {
     return (
       <div className={styles.unlockBanner}>
-        ✨ Nouveaux matériaux + armes lourdes débloqués !
+        ✨ Round 4 — Nouveaux matériaux + armes lourdes débloqués !
       </div>
     )
   }
