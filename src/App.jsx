@@ -241,6 +241,7 @@ export default function App() {
           playerHP={playerHP}
           gameResult={gameResult}
           onRestart={startGame}
+          difficulty={state.difficulty}
         />
       )}
     </div>
