@@ -159,6 +159,7 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
   const [secretRevealed,      setSecretRevealed]      = useState(false)
   const [aiRevealedChipCount, setAiRevealedChipCount] = useState(0)
   const [aiScoredChipCount,   setAiScoredChipCount]   = useState(0)
+  const [aiSecretRevealed,    setAiSecretRevealed]    = useState(false)
 
   const [bonusChips]   = useState(() => buildBonusChips([...weaponSlots, ...artefactSlots]))
   const [aiBonusChips] = useState(() => buildBonusChips(aiWeapon.slots || []))
@@ -184,6 +185,7 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
     setSecretRevealed(false)
     setAiRevealedChipCount(0)
     setAiScoredChipCount(0)
+    setAiSecretRevealed(false)
 
     const timers = []
 
@@ -223,8 +225,16 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
       ? step1Time + CHIP_FIRST_DELAY + (aiBonusChips.length - 1) * CHIP_INTERVAL + SCORE_DELAY
       : step1Time
 
+    // AI secret reveal (same logic as player)
+    if (aiWeapon.isSecret) {
+      timers.push(setTimeout(() => setAiSecretRevealed(true), aiLastScore + SECRET_REVEAL_DELAY))
+    }
+    const aiReadyTime = aiWeapon.isSecret
+      ? aiLastScore + SECRET_REVEAL_DELAY + 900
+      : aiLastScore
+
     // ── Step 2 : Clash ───────────────────────────────────────────
-    const step2Time = Math.max(aiLastScore + 600, step1Time + 1000)
+    const step2Time = Math.max(aiReadyTime + 600, step1Time + 1000)
     timers.push(setTimeout(() => setStep(2), step2Time))
 
     // ── Step 3 : Result + continue button ────────────────────────
@@ -269,6 +279,7 @@ export default function CombatArena({ playerWeapon, aiWeapon, onResolve, weaponS
             label="Arme"
             revealed={step >= 1}
             displayedPower={aiDisplayedPower}
+            secretRevealed={aiSecretRevealed}
           />
           <BonusChips chips={aiBonusChips} revealedCount={aiRevealedChipCount} />
         </div>
