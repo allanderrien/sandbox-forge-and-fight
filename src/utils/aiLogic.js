@@ -130,7 +130,7 @@ function aiForgeNormal(round, wins) {
   const bpPool = weaponBps.length > 0 ? weaponBps : allBps
 
   // Pick better blueprint by basePower
-  const [primary, secondary] = (bpPool[0]?.basePower ?? 0) >= (bpPool[1]?.basePower ?? -1)
+  const [primary, secondary] = bpPool.length < 2 || bpPool[0].basePower >= bpPool[1].basePower
     ? [bpPool[0], bpPool[1]]
     : [bpPool[1], bpPool[0]]
 
@@ -176,7 +176,7 @@ function aiForgeHard(round, wins, playerHP, lastRoundResult) {
     return score
   }
 
-  const [primary, secondary] = estimateValue(bpPool[0]) >= estimateValue(bpPool[1] ?? bpPool[0])
+  const [primary, secondary] = bpPool.length < 2 || estimateValue(bpPool[0]) >= estimateValue(bpPool[1])
     ? [bpPool[0], bpPool[1]]
     : [bpPool[1], bpPool[0]]
 
