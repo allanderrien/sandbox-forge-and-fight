@@ -1,9 +1,22 @@
 import { MATERIALS } from '../data/materials.js'
 import { SECRET_RECIPES } from '../data/recipes.js'
+import { BLUEPRINTS, LIGHT_BLUEPRINT_IDS } from '../data/blueprints.js'
 import { drawCards, drawBlueprints } from './deckManager.js'
 import { forgeSlot } from './forgeEngine.js'
 
 // ── Shared helpers ────────────────────────────────────────────────────────
+
+// Garantit toujours 2 blueprints d'arme (non-artefact) pour l'IA
+// Si des artefacts sont tirés, on les remplace par des light blueprints aléatoires
+function drawWeaponBps(round) {
+  const all = drawBlueprints(round)
+  const weapons = all.filter(bp => bp.category !== 'artefact')
+  while (weapons.length < 2) {
+    const fallback = BLUEPRINTS[LIGHT_BLUEPRINT_IDS[Math.floor(Math.random() * LIGHT_BLUEPRINT_IDS.length)]]
+    weapons.push(fallback)
+  }
+  return weapons
+}
 
 function trySecretRecipe(hand) {
   const ids = hand.map(c => c.id)
@@ -95,8 +108,7 @@ function aiForgeEasy(round, wins) {
   }
   const hand = drawCards(wins, 3)
   const level = getLevel(round)
-  const allBps = drawBlueprints(round)
-  const [blueprint] = allBps.filter(bp => bp.category !== 'artefact').concat(allBps)
+  const [blueprint] = drawWeaponBps(round)
 
   let selectedCards
   if (level >= 3) {
@@ -125,9 +137,7 @@ function aiForgeEasy(round, wins) {
 
 function aiForgeNormal(round, wins) {
   const hand = drawCards(wins, 4)
-  const allBps = drawBlueprints(round)
-  const weaponBps = allBps.filter(bp => bp.category !== 'artefact')
-  const bpPool = weaponBps.length > 0 ? weaponBps : allBps
+  const bpPool = drawWeaponBps(round)
 
   // Pick better blueprint by basePower
   const [primary, secondary] = bpPool.length < 2 || bpPool[0].basePower >= bpPool[1].basePower
@@ -160,9 +170,7 @@ function aiForgeNormal(round, wins) {
 
 function aiForgeHard(round, wins, playerHP, lastRoundResult) {
   const hand = drawCards(wins, 5)
-  const allBps = drawBlueprints(round)
-  const weaponBps = allBps.filter(bp => bp.category !== 'artefact')
-  const bpPool = weaponBps.length > 0 ? weaponBps : allBps
+  const bpPool = drawWeaponBps(round)
   const context = { playerHP, lastRoundResult, allElements: hand }
 
   function estimateValue(bp) {
